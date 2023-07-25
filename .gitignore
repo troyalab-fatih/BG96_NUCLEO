@@ -1,0 +1,11 @@
+.metadata
+.settings
+[Rr]elease
+BG96_NUCLEO/Debug/Core/
+BG96_NUCLEO/Debug/Drivers/
+*.elf
+*.list
+*.map
+*.mk
+*makefile
+.launch
