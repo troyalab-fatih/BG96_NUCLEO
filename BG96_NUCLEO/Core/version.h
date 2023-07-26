@@ -6,22 +6,34 @@
 /************************************************************
  *                                                          *
  *                                                          *
- *					        BG96                            *
+ *					                BG96                            *
  *                                                          *
  *                        TROYALAB                          *
  *                                                          *
- *				           NUCLEO                           *
+ *				                 NUCLEO                           *
  *                                                          *
  *                                                          *
  ************************************************************/
 
 
-#define 	VERSION  0.0.1
+#define 	 VERSION    0.0.1200
+
+#define    MAJOR      0
+#define    MINOR      0
+#define    BUILD      1.200
 
 
-#define 	BUILD    1
-#define 	MINOR    0
-#define     MAJOR    0
+/**************************************************************
+ *   Version    : 0.0.1.200
+ *   Tarih      : 26.07.2023
+ *   Author     : TroyaLAB Fatih
+ *
+ *   StmCubeIDE : 1.13.0
+ *
+ *   Versiyon aciklamalar
+ *   ------------------------------
+ *  - Nucleo board'u icin basit bir kod.
+ **************************************************************/
 
 /**************************************************************
  *   Version    : 0.0.1

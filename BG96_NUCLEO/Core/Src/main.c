@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -57,6 +58,14 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+uint8_t data_buffer[100]; // data buffer
+uint8_t recvd_data; // receive buffer
+uint32_t count=0; // count how many bytes are received
+
+uint8_t komut_gonder_devam_flag = 0;
+
+uint64_t timeout_sayac_basla = 0;
+uint64_t timeout_sayac_basla_2 = 0;
 /* USER CODE END 0 */
 
 /**
@@ -90,12 +99,20 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  char alinan_data[32]; //Data to send
-  alinan_data[32] = 0;
-  HAL_UART_Receive_IT( &huart1, alinan_data, sizeof(alinan_data) );
+
+  char *user_data = "AT\r\n";
 
 
+
+
+
+  HAL_UART_Receive_IT (&huart1, &recvd_data, 1); //receive data from data buffer interrupt mode
+
+
+  HAL_Delay(5000);
+  HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
   /* USER CODE END 2 */
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -105,10 +122,102 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	uint8_t Test[] = "AT\r\n"; //Data to send
-	HAL_UART_Transmit(&huart1,Test,sizeof(Test),10);// Sending in normal mode
-	HAL_Delay(1000);
 
+
+    user_data = "ATI\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(2000);
+
+    user_data = "AT+CPIN?\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(2000);
+
+    user_data = "AT+CFUN=1\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(2000);
+
+    user_data = "AT+COPS?\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(5000);
+
+
+//----------------------------- IP
+
+
+    user_data = "AT+CGDCONT=1,\"IP\",\"internet\"\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(4000);
+
+    user_data = "AT+CREG=1\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(2000);
+
+    user_data = "AT+CREG?\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(2000);
+
+    user_data = "AT+CEREG?\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(2000);
+
+    user_data = "AT+CGREG?\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(6000);
+
+    user_data = "AT+QIACT=1\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(6000);
+
+    user_data = "AT+CGPADDR\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(3000);
+
+    user_data = "AT+QPING=1,\"8.8.8.8\"\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(6000);
+
+
+
+    //--------------------MQTT
+
+
+    user_data = "AT+QMTOPEN=0,\"3.144.39.189\",1883\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(4000);
+
+    user_data = "AT+QMTCONN=0,\"troyalab_f\",\"troyalab_f\",\"troyalab_f\"\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(4000);
+
+    user_data = "AT+QMTPUB=0,0,0,0,\"v1/devices/me/telemetry\"\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(4000);
+
+    user_data = "{\"fatih\":6.00,\"furkan\":34.00}\r\n";
+    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+    HAL_Delay(1000);
+
+    char ctrlz = 0x1A;
+    HAL_UART_Transmit(&huart1, (uint8_t *)&ctrlz, 1, 10);// Sending in normal mode
+    HAL_Delay(2000);
+
+
+
+	  //	  if(komut_gonder_devam_flag == 1)
+//	  {
+//		  komut_gonder_devam_flag = 0;
+//
+//		  HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+//		  //timeout_sayac_basla = 0;
+//	  }
+//	  else
+//	  {
+//		  timeout_sayac_basla = HAL_GetTick();
+//		  if(timeout_sayac_basla = 25000)
+//		  {
+//			  HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+//		  }
+//	  }
 
   }
   /* USER CODE END 3 */
@@ -233,6 +342,44 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+
+//	 if(recvd_data == '\n') //when enter is pressed go to this condition
+//	 {
+//		 data_buffer[count++]='\n';
+//
+//		 if(data_buffer[count-2] == '\r') //when enter is pressed go to this condition
+//		 {
+//			 if(data_buffer[count-3] == '\r')
+//			 {
+//				 // gonderilen mesaj
+//			 }
+//			 else // alinan mesaj
+//			 {
+//				 komut_gonder_devam_flag = 1;
+//			 }
+//			 HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
+//		 }
+//		 HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
+//
+//		 //HAL_UART_Transmit(&huart1,data_buffer,count,HAL_MAX_DELAY); //transmit the full sentence again
+//		 //memset(data_buffer, 0, count); // enpty the data buffer
+//	 }
+//	 else
+//	 {
+//		 data_buffer[count++] = recvd_data; // every time when interrput is happen, received 1 byte of data
+//		 //return TROYALAB_ERROR;
+//	 }
+//
+//	 HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
+//
+
+}
+
+
+
 
 /* USER CODE END 4 */
 

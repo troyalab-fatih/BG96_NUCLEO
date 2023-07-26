@@ -31,11 +31,19 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include<string.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+
+typedef enum
+{
+  TROYALAB_OK            = 0x00U,
+  TROYALAB_ERROR         = 0x01U,
+  TROYALAB_BUSY          = 0x02U,
+  TROYALAB_TIMEOUT       = 0x03U
+} TROYALAB_status;
 
 /* USER CODE END ET */
 
