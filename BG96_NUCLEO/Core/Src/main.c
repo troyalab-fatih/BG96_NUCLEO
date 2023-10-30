@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "TroyaLAB_BG96_Shield.h"
 
 /* USER CODE END Includes */
 
@@ -66,6 +67,28 @@ uint8_t komut_gonder_devam_flag = 0;
 
 uint64_t timeout_sayac_basla = 0;
 uint64_t timeout_sayac_basla_2 = 0;
+
+
+
+
+
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+//
+//    if (huart->Instance == USART1) {
+//        if (alinan_veriler_st.buffer_size_u16 < BUFFER_SIZE - 1) {
+//
+//          alinan_veriler_st.alinan_data_buffer_a8[alinan_veriler_st.buffer_size_u16++] = alinan_veriler_st.alinan_data_u8; // receivedData, UART verisi
+//          HAL_UART_Receive_IT (&huart1, &alinan_veriler_st.alinan_data_u8, 1); //receive data from data buffer interrupt mode
+//        }
+//    }
+//    // Başka UART'lar için gerekirse benzer işlemleri yapabilirsiniz
+//}
+
+
+
+
+
+
 /* USER CODE END 0 */
 
 /**
@@ -108,6 +131,7 @@ int main(void)
 
   HAL_UART_Receive_IT (&huart1, &recvd_data, 1); //receive data from data buffer interrupt mode
 
+  set_bg96_receivedData(recvd_data);
 
   HAL_Delay(5000);
   HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
@@ -122,15 +146,19 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
+    //HAL_UART_Receive_IT (&huart1, &recvd_data, 1); //receive data from data buffer interrupt mode
 
 
     user_data = "ATI\r\n";
-    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
-    HAL_Delay(2000);
+    sendATComm(huart1, user_data);
+
+//    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+//    HAL_Delay(2000);
 
     user_data = "AT+CPIN?\r\n";
-    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
-    HAL_Delay(2000);
+    sendATComm(huart1, user_data);
+//    HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
+//    HAL_Delay(2000);
 
     user_data = "AT+CFUN=1\r\n";
     HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
@@ -181,11 +209,11 @@ int main(void)
     //--------------------MQTT
 
 
-    user_data = "AT+QMTOPEN=0,\"3.144.39.189\",1883\r\n";
+    user_data = "AT+QMTOPEN=0,\"194.31.59.188\",1883\r\n";
     HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
     HAL_Delay(4000);
 
-    user_data = "AT+QMTCONN=0,\"troyalab_f\",\"troyalab_f\",\"troyalab_f\"\r\n";
+    user_data = "AT+QMTCONN=0,\"deneme\",\"deneme\",\"deneme\"\r\n";
     HAL_UART_Transmit(&huart1, (uint8_t*)user_data, strlen(user_data),10);// Sending in normal mode
     HAL_Delay(4000);
 
@@ -201,7 +229,7 @@ int main(void)
     HAL_UART_Transmit(&huart1, (uint8_t *)&ctrlz, 1, 10);// Sending in normal mode
     HAL_Delay(2000);
 
-
+    //HAL_UART_Receive();
 
 	  //	  if(komut_gonder_devam_flag == 1)
 //	  {
@@ -342,44 +370,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-
-//	 if(recvd_data == '\n') //when enter is pressed go to this condition
-//	 {
-//		 data_buffer[count++]='\n';
-//
-//		 if(data_buffer[count-2] == '\r') //when enter is pressed go to this condition
-//		 {
-//			 if(data_buffer[count-3] == '\r')
-//			 {
-//				 // gonderilen mesaj
-//			 }
-//			 else // alinan mesaj
-//			 {
-//				 komut_gonder_devam_flag = 1;
-//			 }
-//			 HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
-//		 }
-//		 HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
-//
-//		 //HAL_UART_Transmit(&huart1,data_buffer,count,HAL_MAX_DELAY); //transmit the full sentence again
-//		 //memset(data_buffer, 0, count); // enpty the data buffer
-//	 }
-//	 else
-//	 {
-//		 data_buffer[count++] = recvd_data; // every time when interrput is happen, received 1 byte of data
-//		 //return TROYALAB_ERROR;
-//	 }
-//
-//	 HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
-//
-
-}
-
-
-
 
 /* USER CODE END 4 */
 
