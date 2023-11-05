@@ -16,11 +16,24 @@
  ************************************************************/
 
 
-#define 	 VERSION    0.0.1201
+#define 	 VERSION    0.0.1.202
 
 #define    MAJOR      0
 #define    MINOR      0
-#define    BUILD      1.201
+#define    BUILD      1202
+
+
+/**************************************************************
+ *   Version    : 0.0.1.202
+ *   Tarih      : 05.11.2023
+ *   Author     : TroyaLAB Fatih
+ *
+ *   StmCubeIDE : 1.13.0
+ *
+ *   Versiyon aciklamalar
+ *   ------------------------------
+ *  - sendATComm fonksiyonu eklendi. eskikleri tamamlanacak.
+ **************************************************************/
 
 
 /**************************************************************
