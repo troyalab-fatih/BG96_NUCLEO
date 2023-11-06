@@ -43,6 +43,7 @@ void troyalab_Stm_Shield_BG96_init(UART_HandleTypeDef *uart_module_t)
   HAL_Delay(100);
 }
 
+
 /*
 # Date   : 01/11/2023
 # Author : Fatih Furkan
@@ -52,6 +53,7 @@ void set_MAX_DELAY_TIME( uint32_t MAX_DELAY)
 {
   TRYLAB_st.timeout_st.TRY_LAB_MAX_DELAY_ms_u32 = MAX_DELAY;
 }
+
 
 /*
 # Date   : 01/11/2023
@@ -73,6 +75,7 @@ void sendATCommOnce(char *user_data_u8)
 {
   HAL_UART_Transmit(TRYLAB_st.BG96_uart_st.uart_handle, (uint8_t*)user_data_u8, strlen(user_data_u8), 10); // Sending in normal mode
 }
+
 
 /*
 # Date   : 01/11/2023
@@ -98,6 +101,9 @@ uint32_t sendATComm(char *user_data_u8, char *response_data_u8)
       if(TRYLAB_st.timeout_st.attemp_time_u8 > TRYLAB_st.timeout_st.MAX_ATTEMPT)
       {
         TRYLAB_st.data_transfer_st.transfer_starting_u8 = TRYLAB_FALSE;
+        TRYLAB_st.data_transfer_st.transfer_continues_u8 = 0;
+        TRYLAB_st.data_transfer_st.buffer_size_u16 = 0;
+
         return TRYLAB_TIMEOUT;
       }
     }
@@ -105,21 +111,28 @@ uint32_t sendATComm(char *user_data_u8, char *response_data_u8)
     if(TRYLAB_st.data_transfer_st.transfer_continues_u8 > 0)
     {
       char *result = strstr(TRYLAB_st.data_transfer_st.alinan_data_buffer_a8, response_data_u8);
+
       if (result != NULL)
       {
+        char  temp[BUFFER_SIZE] = {0};
+        strcpy(temp, TRYLAB_st.data_transfer_st.alinan_data_buffer_a8);
+
+        uint8_t sifirla = 0;
+        for( sifirla = 0 ; sifirla < 250; sifirla++)
+        {
+          TRYLAB_st.data_transfer_st.alinan_data_buffer_a8[sifirla] = 0;
+        }
+
+        TRYLAB_st.data_transfer_st.transfer_starting_u8 = TRYLAB_FALSE;
+        TRYLAB_st.data_transfer_st.transfer_continues_u8 = 0;
+        TRYLAB_st.data_transfer_st.buffer_size_u16 = 0;
+
+        TRYLAB_st.data_transfer_st.sayac_u8++; //for test
         return TRYLAB_OK;
       }
-
     }
-
   }
-
-    //return HAL_ERROR;
 }
-
-
-
-
 
 
 /*
@@ -127,14 +140,11 @@ uint32_t sendATComm(char *user_data_u8, char *response_data_u8)
 # Author : Fatih Furkan
 #
 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+void Int_Func_for_sendATComm(UART_HandleTypeDef *huart)
 {
 
-
-  //uint32_t currentTime = HAL_GetTick();
-  if (huart->Instance == USART1)
+  if (huart == TRYLAB_st.BG96_uart_st.uart_handle)
   {
-
     if(TRYLAB_st.data_transfer_st.transfer_starting_u8)
     {
       TRYLAB_st.data_transfer_st.transfer_continues_u8++;
@@ -150,52 +160,3 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
 
 }
-
-
-
-
-
-
-
-
-
-//void set_bg96_receivedData(uint8_t receivedData)
-//{
-//  TRYLAB_st.alinan_data_u8 = receivedData;
-//}
-
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//
-//   if(recvd_data == '\n') //when enter is pressed go to this condition
-//   {
-//     data_buffer[count++]='\n';
-//
-//     if(data_buffer[count-2] == '\r') //when enter is pressed go to this condition
-//     {
-//       if(data_buffer[count-3] == '\r')
-//       {
-//         // gonderilen mesaj
-//       }
-//       else // alinan mesaj
-//       {
-//         komut_gonder_devam_flag = 1;
-//       }
-//       HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
-//     }
-//     HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
-//
-//     //HAL_UART_Transmit(&huart1,data_buffer,count,HAL_MAX_DELAY); //transmit the full sentence again
-//     //memset(data_buffer, 0, count); // enpty the data buffer
-//   }
-//   else
-//   {
-//     data_buffer[count++] = recvd_data; // every time when interrput is happen, received 1 byte of data
-//     //return TROYALAB_ERROR;
-//   }
-//
-//   HAL_UART_Receive_IT(&huart1, &recvd_data, 1); //start next data receive interrupt
-//
-//}
-
-

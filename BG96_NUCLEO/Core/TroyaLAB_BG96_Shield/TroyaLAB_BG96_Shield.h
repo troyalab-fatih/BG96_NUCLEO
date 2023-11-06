@@ -49,6 +49,7 @@ typedef struct{
 typedef struct{
   uint8_t                  transfer_starting_u8;
   uint32_t                 transfer_continues_u8;
+  uint32_t                 sayac_u8;
 
   char                     alinan_data_buffer_a8[BUFFER_SIZE];
   uint16_t                 buffer_size_u16;
